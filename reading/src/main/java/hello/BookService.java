@@ -25,16 +25,11 @@ public class BookService {
 
     @Autowired
     private final RestTemplate restTemplate;
-
-
     public BookService(RestTemplate rest) {
         this.restTemplate = rest;
     }
 
-    @HystrixCommand(fallbackMethod = "getBookFallBacK",
-            threadPoolProperties = {
-                    @HystrixProperty(name = "coreSize", value = "5")
-            })
+    @HystrixCommand(fallbackMethod = "getBookFallBacK")
     public Book getBook(String id) {
         System.out.println("Isolation Thread:" + Thread.currentThread().getId());
         URI uri = URI.create(bookServiceEndpoint + "/book/" + id);
@@ -42,42 +37,17 @@ public class BookService {
         return this.restTemplate.getForObject(uri, Book.class);
     }
 
-    public Book getBookFallBacK(String id) {
-        System.out.println("Enter fallback:" + Thread.currentThread().getId());
-        return new Book(-1, "i'm fallback");
-    }
-
-    @HystrixCommand(fallbackMethod = "getBookFallBackNull")
+    @HystrixCommand(fallbackMethod = "getBookFallBacK")
     public Book getBookException(String id) {
         System.out.println("Isolation Thread:" + Thread.currentThread().getId());
         throw new RuntimeException("Oops Sometging wrong");
     }
 
-    public Book getBookFallBackNull(String id) {
-        System.out.println("Enter fallback:" + Thread.currentThread().getId());
-        return null;
-    }
-
-    @HystrixCommand(commandKey = "shortTimeOut",fallbackMethod = "getBookFallBackStub")
+    @HystrixCommand(commandKey = "getBookTimeOut",fallbackMethod = "getBookFallBackStub")
     public Book getBookTimeOut(String id) {
         System.out.println("Isolation Thread:" + Thread.currentThread().getId());
         URI uri = URI.create(bookServiceEndpoint + "/slowbook/" + id);
         Book response= this.restTemplate.getForObject(uri, Book.class);
-        return response;
-    }
-
-    public Book getBookFallBackStub(String id, Throwable e) {
-        System.out.println("Enter fallback:" + Thread.currentThread().getId());
-        return new Book(Long.parseLong(id), "UNKNOW TITLE");
-    }
-
-    @HystrixCommand(commandProperties = {
-            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
-    })
-    public Book getBookSemaphore(String id) {
-        System.out.println("Execution Thread:" + Thread.currentThread().getId());
-        URI uri = URI.create(bookServiceEndpoint + "/book/" + id);
-        Book response = this.restTemplate.getForObject(uri, Book.class);
         return response;
     }
 
@@ -91,6 +61,34 @@ public class BookService {
         Book response = this.restTemplate.getForObject(uri, Book.class);
         return response;
     }
+
+
+    public Book getBookFallBacK(String id) {
+        System.out.println("Enter fallback:" + Thread.currentThread().getId());
+        return new Book(-1, "i'm fallback");
+    }
+
+    public Book getBookFallBackStub(String id, Throwable e) {
+        System.out.println("Enter fallback:" + Thread.currentThread().getId());
+        return new Book(Long.parseLong(id), "UNKNOW TITLE");
+    }
+
+    public Book getBookFallBackNull(String id) {
+        System.out.println("Enter fallback:" + Thread.currentThread().getId());
+        return null;
+    }
+
+
+    @HystrixCommand(commandProperties = {
+            @HystrixProperty(name = "execution.isolation.strategy", value = "SEMAPHORE")
+    })
+    public Book getBookSemaphore(String id) {
+        System.out.println("Execution Thread:" + Thread.currentThread().getId());
+        URI uri = URI.create(bookServiceEndpoint + "/book/" + id);
+        Book response = this.restTemplate.getForObject(uri, Book.class);
+        return response;
+    }
+
   /*
   * Request Collapser
   * */

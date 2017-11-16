@@ -35,6 +35,15 @@ public class BookstoreApplication {
     return new Book(id,"This is Book "+id);
   }
 
+
+
+
+
+
+
+
+
+
   @RequestMapping(value = "/books")
   public List<Book> readingList(@RequestParam(value="id")List<Long> ids){
     System.out.println("List :"+ ids.toString());

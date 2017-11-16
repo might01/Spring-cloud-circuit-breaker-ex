@@ -55,16 +55,19 @@ public class ReadingApplication {
     return bookService.getBookTimeOut(id);
   }
 
+  @RequestMapping("/read-shaky/{id}")
+  public Book toReadShaky(@PathVariable String id) {
+    return bookService.getBookShaky(id);
+  }
+
+
+
+
+
 
   @RequestMapping("/read-sem/{id}")
   public Book toReadSemaphore(@PathVariable String id) {
     return bookService.getBookSemaphore(id);
-  }
-
-
-  @RequestMapping("/read-shaky/{id}")
-  public Book toReadShaky(@PathVariable String id) {
-    return bookService.getBookShaky(id);
   }
 
   @RequestMapping("/read-collapser/{id}")
