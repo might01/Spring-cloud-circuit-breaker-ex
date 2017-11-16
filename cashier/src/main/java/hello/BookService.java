@@ -21,11 +21,7 @@ public class BookService {
     this.restTemplate = rest;
   }
 
-  @HystrixCommand(fallbackMethod = "getBookFallBacK",
-          threadPoolProperties = {
-                  @HystrixProperty(name = "coreSize", value = "5"),
-                  @HystrixProperty(name = "allowMaximumSizeToDivergeFromCoreSize", value = "true"),
-          })
+  @HystrixCommand(fallbackMethod = "getBookFallBacK")
   public Book getBook(String id) {
     System.out.println("Thread parent:"+Thread.currentThread().getId());
     URI uri = URI.create(bookServiceEndpoint+"/book/"+id);
